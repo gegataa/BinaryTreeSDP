@@ -328,6 +328,18 @@ public:
 		add_help(root, value, path);
 	}
 
+	bool isSubTree(const BinaryTree<T>& other)
+	{
+		return isSubTree(root, other.root);
+	}
+	
+	std::vector<T> levelItems(int lvl)
+	{
+		return levelItems(root,lvl)
+	}
+
+
+
 	~BinaryTree()
 	{
 		cleanup(root);
