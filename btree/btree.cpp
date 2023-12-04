@@ -28,6 +28,22 @@ class BinaryTree
 {
 private:
 	Node<T>* root;
+
+
+
+
+	//----CHECKS IF TREE CONTAINS THE VALUE(data)----
+	bool isMember_j(Node<T>* root, const T& data)
+	{
+		if (!root)
+		{
+			return false;
+		}
+
+		return			  root->data==data ||
+			   isMember_j(root->left,data) ||
+			   isMember_j(root->right,data);
+	}
 	bool member(Node<T>* root, const T& data)
 	{
 		if (!root)
@@ -40,6 +56,17 @@ private:
 			member(root->right, data);
 	}
 
+	//?????
+	void cleanup_j(Node<T>* root) {
+
+		if (root)
+		{
+			cleanup_j(root->left);
+			cleanup_j(root->right);
+			delete root;
+		}	
+		
+	}
 	void cleanup(Node<T>* root)
 	{
 		if (!root)
@@ -75,7 +102,7 @@ private:
 
 		return leaves(root->left) + leaves(root->right);
 	}
-	
+
 	void print_help(const Node<T>* root)
 	{
 		if (!root)
@@ -84,7 +111,7 @@ private:
 		}
 
 		print_help(root->left);
-		std::cout << root->data<<" ";
+		std::cout << root->data << " ";
 		print_help(root->right);
 	}
 
@@ -133,11 +160,11 @@ private:
 		return new Node<T>(other->data, copy(other->left), copy(other->right));
 	}
 
-	void add_help(Node<T>* &root, const T data,std::string path)
+	void add_help(Node<T>*& root, const T data, std::string path)
 	{
-		if(!root)
+		if (!root)
 		{
-			if(path.empty())
+			if (path.empty())
 			{
 				root = new Node<T>(data);
 			}
@@ -148,12 +175,12 @@ private:
 			return;
 		}
 
-		if(path.empty())
+		if (path.empty())
 		{
 			root->data = data;
 		}
 
-		if(path[0]=='L')
+		if (path[0] == 'L')
 		{
 			add_help(root->left, data, path.substr(1, path.size() - 1));
 			return;
@@ -168,18 +195,18 @@ private:
 
 	int level(Node<T>* root, T data, int curr_lvl)
 	{
-		if(!root)
+		if (!root)
 		{
 			return  -1;
 		}
 
-		if (root->data == data) 
+		if (root->data == data)
 		{
 			return curr_lvl;
 		}
 
 		int leftL = level(root->left, data, curr_lvl + 1);
-		if(leftL>0)
+		if (leftL > 0)
 		{
 			return leftL;
 		}
@@ -189,12 +216,12 @@ private:
 
 	std::vector<T> levelItems(Node<T>* root, int lvl)
 	{
-		if(!root)
+		if (!root)
 		{
 			return std::vector<T>();
 		}
 
-		if(lvl==1)
+		if (lvl == 1)
 		{
 			return std::vector<T>({ root->data });
 		}
@@ -205,20 +232,20 @@ private:
 		lefts.insert(lefts.end(), right.begin(), right.end());
 		return lefts;
 	}
-	
+
 	bool equal(Node<T>* tree_1, Node<T>* tree_2)
 	{
-		if(!tree_1&&!tree_2)
+		if (!tree_1 && !tree_2)
 		{
 			return true;
 		}
 
-		if(!tree_1)
+		if (!tree_1)
 		{
 			return false;
 		}
 
-		if(!tree_2)
+		if (!tree_2)
 		{
 			return false;
 		}
@@ -228,17 +255,17 @@ private:
 
 	bool isSubTree(Node<T>* tree_1, Node<T>* tree_2)
 	{
-		if(!tree_2)
+		if (!tree_2)
 		{
 			return true;
 		}
 
-		if(!tree_1)
+		if (!tree_1)
 		{
 			return false;
 		}
 
-		if(equal(tree_1,tree_2))
+		if (equal(tree_1, tree_2))
 		{
 			return true;
 		}
@@ -247,29 +274,36 @@ private:
 	}
 	Node<T>* lca(Node<T>* root, Node<T>* first, Node<T>* second)
 	{
-		if(!root)
+		if (!root)
 		{
 			return nullptr;
 		}
-		if(root ==first)
+		if (root == first)
 		{
 			return root;
 		}
-		if(root==second)
+		if (root == second)
 		{
 			return root;
 		}
 		Node<T>* Llca = lca(root->left, first, second);
 		Node<T>* Rlca = lca(root->right, first, second);
 
-		if(Llca&&Rlca)
+		if (Llca && Rlca)
 		{
 			return root;
 		}
 
-		return Llca ? Llca : Rlca;	
+		return Llca ? Llca : Rlca;
 	}
+
+
+
+
+
 public:
+
+
 	BinaryTree()
 	{
 		root = nullptr;
@@ -277,7 +311,7 @@ public:
 	BinaryTree(const BinaryTree<T>& other)
 	{
 		root = copy(other.root);
-	
+
 	}
 	BinaryTree& operator= (const BinaryTree<T>& other)
 	{
@@ -290,6 +324,12 @@ public:
 		return *this;
 
 	}
+	~BinaryTree()
+	{
+		cleanup(root);
+	}
+
+
 	bool member(const T& data)
 	{
 		return member(root, data);
@@ -320,8 +360,8 @@ public:
 	{
 		return minval(root);
 	}
-	
-	void add(const T value,std::string path)
+
+	void add(const T value, std::string path)
 	{
 		add_help(root, value, path);
 	}
@@ -330,16 +370,12 @@ public:
 	{
 		return isSubTree(root, other.root);
 	}
-	
+
 	std::vector<T> levelItems(int lvl)
 	{
 		return levelItems(root, lvl);
 	}
 
-	~BinaryTree()
-	{
-		cleanup(root);
-	}
 };
 
 
@@ -353,7 +389,7 @@ int main()
 	test.print();
 	BinaryTree<int> copy_test = test;
 	copy_test.print();
-	
-	
+
+
 }
 
