@@ -75,20 +75,20 @@ private:
 
 		return leaves(root->left) + leaves(root->right);
 	}
-
-	void print(const Node<T>* root)
+	
+	void print_help(const Node<T>* root)
 	{
 		if (!root)
 		{
 			return;
 		}
 
-		print(root->left);
-		std::cout << root->data;
-		print(root->right);
+		print_help(root->left);
+		std::cout << root->data<<" ";
+		print_help(root->right);
 	}
 
-	T left_most(const Node<T>* root)
+	T left_most(Node<T>* root)
 	{
 		Node<T>* temp = root;
 		while (temp->left && temp->right)
@@ -135,7 +135,7 @@ private:
 		return new Node<T>*(other->data, copy(other->left), copy(other->right));
 	}
 
-	void add(Node<T>* root, const T data,std::string path)
+	void add_help(Node<T>* &root, const T data,std::string path)
 	{
 		if(!root)
 		{
@@ -147,7 +147,7 @@ private:
 			{
 				throw "Out of tree bounds";
 			}
-			return
+			return;
 		}
 
 		if(path.empty())
@@ -157,17 +157,120 @@ private:
 
 		if(path[0]=='L')
 		{
-			add(root->left, data, path.size() - 1);
+			add_help(root->left, data, path.substr(1, path.size() - 1));
 			return;
 		}
 
 		if (path[0] == 'R')
 		{
-			add(root->right, data, path.size() - 1);
+			add_help(root->right, data, path.substr(1, path.size() - 1));
 			return;
 		}
 	}
 
+	int level(Node<T>* root, T data, int curr_lvl)
+	{
+		if(!root)
+		{
+			return = -1;
+		}
+
+		if (root->data == data) 
+		{
+			return curr_lvl;
+		}
+
+		int leftL = level(root->left, data, curr_lvl + 1);
+		if(leftL>0)
+		{
+			return leftL;
+		}
+
+		return level(root->right, data, curr_lvl + 1);
+	}
+
+	std::vector<T> levelItems(Node<T>* root, int lvl)
+	{
+		if(!root)
+		{
+			return std::vector<T>();
+		}
+
+		if(lvl==1)
+		{
+			return std::vector<T>({ root->data });
+		}
+
+		std::vector<T> lefts = levelItems(root->left, lvl - 1);
+		std::vector<T> right = levelItems(root->right, lvl - 1);
+
+		lefts.insert(lefts.end(), right.begin(), right.end());
+		return lefts;
+	}
+	
+	bool equal(Node<T>* tree_1, Node<T>* tree_2)
+	{
+		if(!tree_1&&!tree_2)
+		{
+			return true;
+		}
+
+		if(!tree_1)
+		{
+			return false;
+		}
+
+		if(!tree_2)
+		{
+			return false;
+		}
+
+		return tree_1->data==tree_2->data&&equal(tree_1->left,tree_2->left)&& equal(tree_1->right, tree_2->right)
+	}
+
+	bool isSubTree(Node<T>* tree_1, Node<T>* tree_2)
+	{
+		if(!tree_2)
+		{
+			return true;
+		}
+
+		if(!first)
+		{
+			return false;
+		}
+
+		if(equal(tree_1,tree_2))
+		{
+			return true;
+		}
+
+		return isSubTree(tree_1->left, tree_2->left) || isSubTree(tree_1->right, tree_2->right)
+	}
+	Node<T>* lca(Node<T>* root, Node<T>* first, Node<T>* second)
+	{
+		if(!root)
+		{
+			return nullptr;
+		}
+		if(root ==first)
+		{
+			return root
+		}
+		if(root==second)
+		{
+			return root;
+		}
+		Node<T>* Llca = lca(root->left, first, second);
+		Node<T>* Rlca = lca(root->right, first, second);
+
+		if(Llca&&Rlca)
+		{
+			return root;
+		}
+
+		return Llca ? Llca : Rlca;	
+	}
 public:
 	BinaryTree()
 	{
@@ -206,7 +309,7 @@ public:
 
 	void print()
 	{
-		print(root);
+		print_help(root);
 		std::cout << '\n';
 	}
 
@@ -222,7 +325,7 @@ public:
 	
 	void add(const T value,std::string path)
 	{
-		add(root, value, path);
+		add_help(root, value, path);
 	}
 
 	~BinaryTree()
@@ -234,6 +337,14 @@ public:
 
 int main()
 {
-
+	BinaryTree<int> test;
+	test.add(1, "");
+	test.add(2, "L");
+	test.add(3, "R");
+	test.print();
+	BinaryTree<int> copy_test = test;
+	copy_test.print();
+	
+	
 }
 
