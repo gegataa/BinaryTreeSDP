@@ -127,12 +127,10 @@ private:
 
 	Node<T>* copy(Node<T>* other)
 	{
-		if(!root)
-		{
+		if (other == nullptr)
 			return nullptr;
-		}
-		
-		return new Node<T>*(other->data, copy(other->left), copy(other->right));
+
+		return new Node<T>(other->data, copy(other->left), copy(other->right));
 	}
 
 	void add_help(Node<T>* &root, const T data,std::string path)
@@ -172,7 +170,7 @@ private:
 	{
 		if(!root)
 		{
-			return = -1;
+			return  -1;
 		}
 
 		if (root->data == data) 
@@ -225,7 +223,7 @@ private:
 			return false;
 		}
 
-		return tree_1->data==tree_2->data&&equal(tree_1->left,tree_2->left)&& equal(tree_1->right, tree_2->right)
+		return tree_1->data == tree_2->data && equal(tree_1->left, tree_2->left) && equal(tree_1->right, tree_2->right);
 	}
 
 	bool isSubTree(Node<T>* tree_1, Node<T>* tree_2)
@@ -235,7 +233,7 @@ private:
 			return true;
 		}
 
-		if(!first)
+		if(!tree_1)
 		{
 			return false;
 		}
@@ -245,7 +243,7 @@ private:
 			return true;
 		}
 
-		return isSubTree(tree_1->left, tree_2->left) || isSubTree(tree_1->right, tree_2->right)
+		return isSubTree(tree_1->left, tree_2->left) || isSubTree(tree_1->right, tree_2->right);
 	}
 	Node<T>* lca(Node<T>* root, Node<T>* first, Node<T>* second)
 	{
@@ -255,7 +253,7 @@ private:
 		}
 		if(root ==first)
 		{
-			return root
+			return root;
 		}
 		if(root==second)
 		{
@@ -278,17 +276,17 @@ public:
 	}
 	BinaryTree(const BinaryTree<T>& other)
 	{
-		cleanup(root);
-		root = nullptr;
-		copy(other);
+		root = copy(other.root);
+	
 	}
 	BinaryTree& operator= (const BinaryTree<T>& other)
 	{
-		if(this!=other)
+		if (this != &other)
 		{
 			cleanup(root);
 			root = copy(other.root);
 		}
+
 		return *this;
 
 	}
@@ -335,10 +333,8 @@ public:
 	
 	std::vector<T> levelItems(int lvl)
 	{
-		return levelItems(root,lvl)
+		return levelItems(root, lvl);
 	}
-
-
 
 	~BinaryTree()
 	{
@@ -353,6 +349,7 @@ int main()
 	test.add(1, "");
 	test.add(2, "L");
 	test.add(3, "R");
+	test.add(4, "RR");
 	test.print();
 	BinaryTree<int> copy_test = test;
 	copy_test.print();
