@@ -29,6 +29,22 @@ class BinaryTree
 {
 private:
 	Node<T>* root;
+
+
+
+
+	//----CHECKS IF TREE CONTAINS THE VALUE(data)----
+	bool isMember_j(Node<T>* root, const T& data)
+	{
+		if (!root)
+		{
+			return false;
+		}
+
+		return			  root->data==data ||
+			   isMember_j(root->left,data) ||
+			   isMember_j(root->right,data);
+	}
 	bool member(Node<T>* root, const T& data)
 	{
 		if (!root)
@@ -41,6 +57,17 @@ private:
 			member(root->right, data);
 	}
 
+	//?????
+	void cleanup_j(Node<T>* root) {
+
+		if (root)
+		{
+			cleanup_j(root->left);
+			cleanup_j(root->right);
+			delete root;
+		}	
+		
+	}
 	void cleanup(Node<T>* root)
 	{
 		if (!root)
@@ -294,6 +321,8 @@ private:
 		get_paths(root->right, paths, curr);
 	}
 public:
+
+
 	BinaryTree()
 	{
 		root = nullptr;
@@ -301,7 +330,7 @@ public:
 	BinaryTree(const BinaryTree<T>& other)
 	{
 		root = copy(other.root);
-	
+
 	}
 	BinaryTree& operator= (const BinaryTree<T>& other)
 	{
@@ -314,6 +343,12 @@ public:
 		return *this;
 
 	}
+	~BinaryTree()
+	{
+		cleanup(root);
+	}
+
+
 	bool member(const T& data)
 	{
 		return member(root, data);
@@ -344,8 +379,8 @@ public:
 	{
 		return minval(root);
 	}
-	
-	void add(const T value,std::string path)
+
+	void add(const T value, std::string path)
 	{
 		add_help(root, value, path);
 	}
@@ -354,7 +389,7 @@ public:
 	{
 		return isSubTree(root, other.root);
 	}
-	
+
 	std::vector<T> levelItems(int lvl)
 	{
 		return levelItems(root, lvl);
