@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <sstream>
 
 template <typename T>
 struct Node
@@ -75,7 +76,7 @@ private:
 
 		return leaves(root->left) + leaves(root->right);
 	}
-	
+
 	void print_help(const Node<T>* root)
 	{
 		if (!root)
@@ -84,7 +85,7 @@ private:
 		}
 
 		print_help(root->left);
-		std::cout << root->data<<" ";
+		std::cout << root->data << " ";
 		print_help(root->right);
 	}
 
@@ -133,11 +134,11 @@ private:
 		return new Node<T>(other->data, copy(other->left), copy(other->right));
 	}
 
-	void add_help(Node<T>* &root, const T data,std::string path)
+	void add_help(Node<T>*& root, const T data, std::string path)
 	{
-		if(!root)
+		if (!root)
 		{
-			if(path.empty())
+			if (path.empty())
 			{
 				root = new Node<T>(data);
 			}
@@ -148,12 +149,12 @@ private:
 			return;
 		}
 
-		if(path.empty())
+		if (path.empty())
 		{
 			root->data = data;
 		}
 
-		if(path[0]=='L')
+		if (path[0] == 'L')
 		{
 			add_help(root->left, data, path.substr(1, path.size() - 1));
 			return;
@@ -168,18 +169,18 @@ private:
 
 	int level(Node<T>* root, T data, int curr_lvl)
 	{
-		if(!root)
+		if (!root)
 		{
 			return  -1;
 		}
 
-		if (root->data == data) 
+		if (root->data == data)
 		{
 			return curr_lvl;
 		}
 
 		int leftL = level(root->left, data, curr_lvl + 1);
-		if(leftL>0)
+		if (leftL > 0)
 		{
 			return leftL;
 		}
@@ -189,12 +190,12 @@ private:
 
 	std::vector<T> levelItems(Node<T>* root, int lvl)
 	{
-		if(!root)
+		if (!root)
 		{
 			return std::vector<T>();
 		}
 
-		if(lvl==1)
+		if (lvl == 1)
 		{
 			return std::vector<T>({ root->data });
 		}
@@ -205,20 +206,20 @@ private:
 		lefts.insert(lefts.end(), right.begin(), right.end());
 		return lefts;
 	}
-	
+
 	bool equal(Node<T>* tree_1, Node<T>* tree_2)
 	{
-		if(!tree_1&&!tree_2)
+		if (!tree_1 && !tree_2)
 		{
 			return true;
 		}
 
-		if(!tree_1)
+		if (!tree_1)
 		{
 			return false;
 		}
 
-		if(!tree_2)
+		if (!tree_2)
 		{
 			return false;
 		}
@@ -228,17 +229,17 @@ private:
 
 	bool isSubTree(Node<T>* tree_1, Node<T>* tree_2)
 	{
-		if(!tree_2)
+		if (!tree_2)
 		{
 			return true;
 		}
 
-		if(!tree_1)
+		if (!tree_1)
 		{
 			return false;
 		}
 
-		if(equal(tree_1,tree_2))
+		if (equal(tree_1, tree_2))
 		{
 			return true;
 		}
@@ -247,27 +248,50 @@ private:
 	}
 	Node<T>* lca(Node<T>* root, Node<T>* first, Node<T>* second)
 	{
-		if(!root)
+		if (!root)
 		{
 			return nullptr;
 		}
-		if(root ==first)
+		if (root == first)
 		{
 			return root;
 		}
-		if(root==second)
+		if (root == second)
 		{
 			return root;
 		}
 		Node<T>* Llca = lca(root->left, first, second);
 		Node<T>* Rlca = lca(root->right, first, second);
 
-		if(Llca&&Rlca)
+		if (Llca && Rlca)
 		{
 			return root;
 		}
 
-		return Llca ? Llca : Rlca;	
+		return Llca ? Llca : Rlca;
+	}
+
+	void get_paths(Node<T>* root, std::vector<std::string>& paths, std::string curr)
+	{
+		if (!root)
+		{
+			return;
+		}
+		if(!root->left&&!root->right)
+		{
+			std::ostringstream stm;
+			stm << root->data;
+			curr+= stm.str();
+			paths.push_back(curr);
+		}
+		else
+		{
+			std::ostringstream stm;
+			stm << root->data;
+			curr += stm.str()+"->";
+		}
+		get_paths(root->left, paths, curr);
+		get_paths(root->right, paths, curr);
 	}
 public:
 	BinaryTree()
@@ -336,6 +360,14 @@ public:
 		return levelItems(root, lvl);
 	}
 
+	std::vector<std::string> paths()
+	{
+		std::vector<std::string> res;
+		std::string str = "";
+		get_paths(root, res, str);
+		return res;
+	}
+
 	~BinaryTree()
 	{
 		cleanup(root);
@@ -353,6 +385,14 @@ int main()
 	test.print();
 	BinaryTree<int> copy_test = test;
 	copy_test.print();
+	test.add(5, "RRR");
+	std::vector<std::string> path_test = test.paths();
+	for(std::string s:path_test)
+	{
+		std::cout << s;
+		std::cout << '\n';
+	}
+
 	
 	
 }
