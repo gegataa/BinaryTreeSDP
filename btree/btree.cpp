@@ -30,9 +30,6 @@ class BinaryTree
 private:
 	Node<T>* root;
 
-
-
-
 	//----CHECKS IF TREE CONTAINS THE VALUE(data)----
 	bool isMember_j(Node<T>* root, const T& data)
 	{
@@ -320,6 +317,23 @@ private:
 		get_paths(root->left, paths, curr);
 		get_paths(root->right, paths, curr);
 	}
+
+	void serialize(Node<T>* root, std::ostringstream& out)
+	{
+		if(!root)
+		{
+			out << "() ";
+		}
+
+		else
+		{
+			out << root->data<<" ";
+			serialize(root->left, out);
+			serialize(root->right, out);
+		}
+	}
+
+
 public:
 
 
@@ -403,10 +417,14 @@ public:
 		return res;
 	}
 
-	~BinaryTree()
+	std::string serialize()
 	{
-		cleanup(root);
+		std::ostringstream res;
+		serialize(root, res);
+		return res.str();
 	}
+
+	
 };
 
 
@@ -427,6 +445,8 @@ int main()
 		std::cout << s;
 		std::cout << '\n';
 	}
+	std::string ser_test = test.serialize();
+	std::cout << ser_test;
 
 	
 	
