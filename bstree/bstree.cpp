@@ -33,25 +33,15 @@ private:
             return true;
         }
 
-        if (root->left)
-        {
-            if (root->left->data < root->data)
-            {
-                return true;
-            }
-            return false;
-        }
+        T maxL = root->left ? find_max(root->left) : root->data;
+        T minR = root->right ? find_min(root->right) : root->data;
 
-        if (root->right)
-        {
-            if(root->right->data > root->data)
-            {
-                return true;
-            }
-            return false;
-        }
+        return root->data<minR&&
+            root->data>maxL &&
+            isBST(root->left) &&
+            isBST(root->right);
 
-        return isBST(root->left) && isBST(root->right);
+      
     }
 
     T find_min(Node<T>* root)
@@ -79,20 +69,20 @@ private:
         if(!root)
         {
             root = new Node<T>(value);
+            return;
         }
 
         if(value<root->data)
         {
             add_help(root->left, value);
+           
         }
-        if(value>root->data)
+        else if(value>root->data)
         {
             add_help(root->right, value);
+          
         }
-        else
-        {
-            throw "Element already in tree";
-        }
+        
     }
 
     void remove(Node<T>* &root, const T& value)
@@ -108,7 +98,7 @@ private:
         {
             remove(root->left, value);
         }
-        else if(root-<data>value)  // ako stoinostta e po golqma otivame nadqsno
+        else if(root->data>value)  // ako stoinostta e po golqma otivame nadqsno
         {
             remove(root->right, value);
         }
@@ -140,7 +130,7 @@ private:
             }
             else
             {
-                Node<T>* temp = root;
+                Node<T>* temp = root->left;
                 while(temp->right)
                 {
                     temp = temp->right;
@@ -162,7 +152,7 @@ private:
         }
         print_inorder(root->left);
         std::cout << root->data << " ";
-        print_inorder(root->left);
+        print_inorder(root->right);
     }
 
     void print_levelOrder(Node<T>* root)
@@ -185,17 +175,19 @@ private:
                 q.push(NULL);
                 std::cout << '\n';
             }
-
-            if(curr->left)
+            else
             {
-                q.push(curr->left);
+               
+                if (curr->right)
+                {
+                    q.push(curr->right);
+                }
+                if (curr->left)
+                {
+                    q.push(curr->left);
+                }
+                std::cout << curr->data << " ";
             }
-            if(curr->right)
-            {
-                q.push(curr->right);
-            }
-
-            std::cout << curr->data << " ";
         }
     }
 
@@ -220,6 +212,44 @@ private:
 
         return new Node<T>(other->data, copy(other->left), copy(other->right));
     }
+
+    void diff_help(Node<T>* root1, Node<T>* root2,std::vector<T> &all)
+    {
+        if(!root1)
+        {
+            return;
+        }
+        if(!root2)
+        {
+
+            std::vector<T> curr = vectorElements(root1);
+            all.insert(all.end(), curr.begin(), curr.end());
+            return;
+        }
+        if(root1&&root2)
+        {
+            diff_help(root1->left, root2->left,all);
+            diff_help(root1->right, root2->right,all);
+        }
+    }
+
+    void vectorElementsHelp(Node<T>* root, std::vector<T>& res)
+    {
+        if (!root)
+        {
+            return;
+        }
+        vectorElementsHelp(root->left,res);
+        res.push_back(root->data);
+        vectorElementsHelp(root->right, res);
+    }
+
+    std::vector<T> vectorElements(Node<T>* root)
+    {
+        std::vector<T> res;
+        vectorElementsHelp(root, res);
+        return res;
+    }
 public:
     BSTree()
     {
@@ -228,14 +258,14 @@ public:
 
     BSTree(const BSTree<T>& other):root(nullptr)
     {
-        root = copy(other);
+        root = copy(other.root);
     }
     BSTree& operator=(const BSTree<T>& other)
     {
         if(!this!=other)
         {
             cleanup(root);
-            root = copy(other);
+            root = copy(other.root);
         }
         return *this;
     }
@@ -256,7 +286,7 @@ public:
 
     void add(const T& value)
     {
-        add(root, value);
+        add_help(root, value);
     }
 
     void remove(const T& value)
@@ -274,6 +304,14 @@ public:
         print_levelOrder(root);
     }
     
+    std::vector<T> diff(BSTree<T> other)
+    {
+        std::vector<T> res;
+        diff_help(root, other.root,res);
+        return res;
+        
+    }
+
     ~BSTree()
     {
         cleanup(root);
@@ -281,6 +319,22 @@ public:
 };
 int main()
 {
+    BSTree<int> test;
+    test.add(10);
+    test.add(5);
+    test.add(20);
+    test.add(15);
+    test.add(30);
+    test.add(25);
+    BSTree<int> test2;
+    test2.add(5);
+    test2.add(7);
+    std::vector<int> t= test.diff(test2);
+    for(int i:t)
+    {
+        std::cout << i<<" ";
+    }
+   
    
 }
 
