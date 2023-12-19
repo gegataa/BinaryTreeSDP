@@ -299,11 +299,13 @@ public:
         print_inorder(root);
     }
 
+    //2022 ИС
     void print_level_order()
     {
         print_levelOrder(root);
     }
     
+    //ИС 2022
     std::vector<T> diff(BSTree<T> other)
     {
         std::vector<T> res;
